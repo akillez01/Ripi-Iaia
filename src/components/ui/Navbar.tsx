@@ -43,41 +43,41 @@ const Navbar = () => {
   const closeMenu = () => setIsOpen(false);
 
   return (
-    <header 
+    <header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        scrolled 
-          ? 'bg-white shadow-md py-2' 
+        scrolled
+          ? 'bg-white shadow-md py-2'
           : 'bg-transparent py-4'
       )}
     >
       <div className="container-custom flex items-center justify-between">
         {/* Logo & Mobile Menu Button */}
         <div className="flex items-center">
-          <button 
+          <button
             className="md:hidden mr-4 text-primary-700"
             onClick={toggleMenu}
             aria-label="Toggle menu"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          
-          <Link 
-  to="/" 
-  className="flex items-center"
-  onClick={closeMenu}
->
-  <div className="relative">
-    <img 
-      src="/logo.jpeg" 
-      alt="Logo" 
-      className="h-8 w-8 md:h-10 md:w-10 object-contain" 
-    />
-  </div>
-  <span className="ml-2 text-xl font-display font-semibold text-primary-800">
-    Ripi ia iá
-  </span>
-</Link>
+
+          <Link
+            to="/"
+            className="flex items-center"
+            onClick={closeMenu}
+          >
+            <div className="relative">
+              <img
+                src="/logo.jpeg"
+                alt="Logo"
+                className="h-8 w-8 md:h-10 md:w-10 object-contain"
+              />
+            </div>
+            <span className="ml-2 text-xl font-display font-semibold text-primary-800">
+              Ripi ia iá
+            </span>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
@@ -109,7 +109,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Navigation Menu */}
-        <div 
+        <div
           className={cn(
             'fixed inset-0 z-50 bg-white md:hidden transition-transform duration-300 ease-in-out',
             isOpen ? 'translate-x-0' : '-translate-x-full'
@@ -117,19 +117,19 @@ const Navbar = () => {
         >
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between p-4 border-b">
-              <Link 
-  to="/" 
-  className="flex items-center"
-  onClick={closeMenu}
->
-  <img 
-    src="/logo.jpeg" 
-    alt="Logo" 
-    className="h-6 w-6 object-contain" 
-  />
-  <span className="ml-2 text-lg font-semibold">Ripi ia iá</span>
-</Link>
-              <button 
+              <Link
+                to="/"
+                className="flex items-center"
+                onClick={closeMenu}
+              >
+                <img
+                  src="/logo.jpeg"
+                  alt="Logo"
+                  className="h-6 w-6 object-contain"
+                />
+                <span className="ml-2 text-lg font-semibold">Ripi ia iá</span>
+              </Link>
+              <button
                 onClick={closeMenu}
                 className="text-gray-500 hover:text-gray-700"
                 aria-label="Close menu"
@@ -137,7 +137,7 @@ const Navbar = () => {
                 <X size={24} />
               </button>
             </div>
-            
+
             <nav className="flex-1 overflow-auto py-4">
               <ul className="space-y-1 px-2">
                 {navItems.map((item) => (
@@ -158,7 +158,7 @@ const Navbar = () => {
                 ))}
               </ul>
             </nav>
-            
+
             <div className="p-4 border-t">
               <Link
                 to="/login"
