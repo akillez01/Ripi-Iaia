@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Star, ChevronDown } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 const navItems = [
@@ -63,18 +63,21 @@ const Navbar = () => {
           </button>
           
           <Link 
-            to="/" 
-            className="flex items-center"
-            onClick={closeMenu}
-          >
-            <div className="relative">
-              <Star className="text-primary-600 h-8 w-8" />
-              <Star className="absolute top-0 left-0 text-secondary-500 h-8 w-8 rotate-30 opacity-70" />
-            </div>
-            <span className="ml-2 text-xl font-display font-semibold text-primary-800">
-              Ripi ia iá
-            </span>
-          </Link>
+  to="/" 
+  className="flex items-center"
+  onClick={closeMenu}
+>
+  <div className="relative">
+    <img 
+      src="/logo.jpeg" 
+      alt="Logo" 
+      className="h-8 w-8 md:h-10 md:w-10 object-contain" 
+    />
+  </div>
+  <span className="ml-2 text-xl font-display font-semibold text-primary-800">
+    Ripi ia iá
+  </span>
+</Link>
         </div>
 
         {/* Desktop Navigation */}
@@ -115,13 +118,17 @@ const Navbar = () => {
           <div className="flex flex-col h-full">
             <div className="flex items-center justify-between p-4 border-b">
               <Link 
-                to="/" 
-                className="flex items-center"
-                onClick={closeMenu}
-              >
-                <Star className="text-primary-600 h-6 w-6" />
-                <span className="ml-2 text-lg font-semibold">Ripi ia iá</span>
-              </Link>
+  to="/" 
+  className="flex items-center"
+  onClick={closeMenu}
+>
+  <img 
+    src="/logo.jpeg" 
+    alt="Logo" 
+    className="h-6 w-6 object-contain" 
+  />
+  <span className="ml-2 text-lg font-semibold">Ripi ia iá</span>
+</Link>
               <button 
                 onClick={closeMenu}
                 className="text-gray-500 hover:text-gray-700"
