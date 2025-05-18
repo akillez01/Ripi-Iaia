@@ -69,10 +69,10 @@ const Navbar = () => {
           >
             <div className="relative">
               <img
-                src="/logo.jpeg"
-                alt="Logo"
-                className="h-8 w-8 md:h-10 md:w-10 object-contain"
-              />
+  src={`${import.meta.env.BASE_URL}logo.jpeg`}
+  alt="Logo"
+  className="h-8 w-8 md:h-10 md:w-10 object-contain"
+/>
             </div>
             <span className="ml-2 text-xl font-display font-semibold text-primary-800">
               Ripi ia iá
@@ -123,10 +123,10 @@ const Navbar = () => {
                 onClick={closeMenu}
               >
                 <img
-                  src="/logo.jpeg"
-                  alt="Logo"
-                  className="h-6 w-6 object-contain"
-                />
+  src={`${import.meta.env.BASE_URL}logo.jpeg`}
+  alt="Logo"
+  className="h-6 w-6 object-contain"
+/>
                 <span className="ml-2 text-lg font-semibold">Ripi ia iá</span>
               </Link>
               <button
