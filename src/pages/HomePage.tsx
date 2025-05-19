@@ -1,28 +1,28 @@
+import { motion } from 'framer-motion';
+import { Book, Play, Radio, ShoppingBag, Star } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Book, ShoppingBag, Radio, Star } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 const banners = [
   {
     id: 1,
     title: "Novos Hinários Disponíveis",
     description: "Acesse nossa coleção atualizada de hinários com partituras e áudios.",
-    image: "https://images.pexels.com/photos/247851/pexels-photo-247851.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    image: `${import.meta.env.BASE_URL}image/mad-rita.jpg`,
     link: "/acervo/hinarios"
   },
   {
     id: 2,
     title: "Transmissão ao Vivo",
     description: "Acompanhe nossos encontros espirituais com transmissão em tempo real.",
-    image: "https://images.pexels.com/photos/164879/pexels-photo-164879.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    image: `${import.meta.env.BASE_URL}image/pad.jpeg`,
     link: "/live"
   },
   {
     id: 3,
     title: "Nova Coleção na Loja",
     description: "Conheça os novos itens disponíveis em nossa loja virtual.",
-    image: "https://images.pexels.com/photos/3944104/pexels-photo-3944104.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    image: `${import.meta.env.BASE_URL}image/pad2.jpeg`,
     link: "/loja"
   }
 ];
@@ -67,19 +67,22 @@ const HomePage = () => {
   return (
     <div>
       {/* Hero Banner */}
-      <section className="relative h-[80vh] min-h-[500px] bg-primary-900 overflow-hidden">
+      <section className="relative h-[80vh] min-h-[500px] bg-primary-900 overflow-hidden pt-20 z-0">
+        {/* pt-20 adiciona espaço para o navbar fixo, z-0 garante que fique atrás do navbar */}
         {banners.map((banner, index) => (
           <div
             key={banner.id}
             className={`absolute inset-0 transition-opacity duration-1000 ${
               index === currentBanner ? 'opacity-100' : 'opacity-0'
             }`}
+            style={{ zIndex: 0 }}
           >
             <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
             <img
               src={banner.image}
               alt={banner.title}
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover z-0"
+              draggable={false}
             />
             <div className="relative z-20 h-full flex items-center">
               <div className="container-custom">

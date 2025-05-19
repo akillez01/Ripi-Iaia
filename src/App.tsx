@@ -1,14 +1,15 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import PageLayout from './components/layout/PageLayout';
-import HomePage from './pages/HomePage';
 import AcervoPage from './pages/AcervoPage';
-import RadioPage from './pages/RadioPage';
-import LivePage from './pages/LivePage';
-import LojaPage from './pages/LojaPage';
+import Biblioteca from './pages/Biblioteca';
 import ContatoPage from './pages/ContatoPage';
+import HomePage from './pages/HomePage';
+import LivePage from './pages/LivePage';
 import LoginPage from './pages/LoginPage';
+import LojaPage from './pages/LojaPage';
 import NotFoundPage from './pages/NotFoundPage';
+import RadioPage from './pages/RadioPage';
+import VideoAulasPage from './pages/VideoAulasPage';
 
 function App() {
   return (
@@ -44,6 +45,22 @@ function App() {
           element={
             <PageLayout>
               <LivePage />
+            </PageLayout>
+          } 
+        />
+        <Route 
+          path="/videoaulas" 
+          element={
+            <PageLayout>
+              <VideoAulasPage />
+            </PageLayout>
+          } 
+        />
+        <Route 
+          path="/Biblioteca" 
+          element={
+            <PageLayout>
+              <Biblioteca/>
             </PageLayout>
           } 
         />

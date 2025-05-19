@@ -6,8 +6,10 @@ import { cn } from '../../utils/cn';
 const navItems = [
   { name: 'Home', path: '/' },
   { name: 'Acervo', path: '/acervo' },
-  { name: 'Rádio', path: '/radio' },
+  { name: 'Hinarios', path: '/biblioteca' },
+  { name: 'Videoaulas', path: '/videoaulas' },
   { name: 'Ao Vivo', path: '/live' },
+  { name: 'Rádio', path: '/radio' },
   { name: 'Loja', path: '/loja' },
   { name: 'Contato', path: '/contato' },
 ];
@@ -47,11 +49,12 @@ const Navbar = () => {
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         scrolled
-          ? 'bg-white shadow-md py-2'
-          : 'bg-transparent py-4'
+          ? 'bg-white shadow-md py-3' // aumente o padding vertical
+          : 'bg-transparent py-5'     // aumente o padding vertical
       )}
+      style={{ minHeight: 68 }} // garante altura mínima para o logo
     >
-      <div className="container-custom flex items-center justify-between">
+      <div className="container-custom flex items-center justify-between min-h-[64px]">
         {/* Logo & Mobile Menu Button */}
         <div className="flex items-center">
           <button
@@ -66,16 +69,23 @@ const Navbar = () => {
             to="/"
             className="flex items-center"
             onClick={closeMenu}
+            style={{ minHeight: 48 }}
           >
-            <div className="relative">
-              <img
-  src={`${import.meta.env.BASE_URL}logo.jpeg`}
-  alt="Logo"
-  className="h-8 w-8 md:h-10 md:w-10 object-contain"
-/>
-            </div>
+            <img
+              src={`${import.meta.env.BASE_URL}logo.jpeg`}
+              alt="Logo"
+              className="h-10 w-10 md:h-12 md:w-12 object-contain"
+              style={{
+                maxHeight: 48,
+                maxWidth: 48,
+                objectFit: 'contain',
+                display: 'block',
+                marginTop: 0,
+                marginBottom: 0,
+              }}
+            />
             <span className="ml-2 text-xl font-display font-semibold text-primary-800">
-              Ripi ia iá
+              Ripi Iaiá
             </span>
           </Link>
         </div>
@@ -121,12 +131,21 @@ const Navbar = () => {
                 to="/"
                 className="flex items-center"
                 onClick={closeMenu}
+                style={{ minHeight: 40 }}
               >
                 <img
-  src={`${import.meta.env.BASE_URL}logo.jpeg`}
-  alt="Logo"
-  className="h-6 w-6 object-contain"
-/>
+                  src={`${import.meta.env.BASE_URL}logo.jpeg`}
+                  alt="Logo"
+                  className="h-10 w-10 object-contain"
+                  style={{
+                    maxHeight: 40,
+                    maxWidth: 40,
+                    objectFit: 'contain',
+                    display: 'block',
+                    marginTop: 0,
+                    marginBottom: 0,
+                  }}
+                />
                 <span className="ml-2 text-lg font-semibold">Ripi Iaiá</span>
               </Link>
               <button

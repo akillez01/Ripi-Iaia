@@ -13,7 +13,7 @@ const Footer = () => {
             <Link to="/" className="flex items-center">
               <Star className="text-primary-300 h-6 w-6" />
               <span className="ml-2 text-xl font-display font-semibold text-white">
-                Ripi ia iá
+                Ripi Iaiá
               </span>
             </Link>
             <p className="text-primary-100 text-sm">
