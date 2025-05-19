@@ -7,7 +7,6 @@ import HomePage from './pages/HomePage';
 import LivePage from './pages/LivePage';
 import LoginPage from './pages/LoginPage';
 import LojaPage from './pages/LojaPage';
-import NotFoundPage from './pages/NotFoundPage';
 import RadioPage from './pages/RadioPage';
 import VideoAulasPage from './pages/VideoAulasPage';
 
@@ -16,77 +15,77 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
             <PageLayout>
               <HomePage />
             </PageLayout>
-          } 
+          }
         />
-        <Route 
-          path="/acervo/*" 
+        <Route
+          path="/acervo/*"
           element={
             <PageLayout>
               <AcervoPage />
             </PageLayout>
-          } 
+          }
         />
-        <Route 
-          path="/radio" 
+        <Route
+          path="/radio"
           element={
             <PageLayout>
               <RadioPage />
             </PageLayout>
-          } 
+          }
         />
-        <Route 
-          path="/live" 
+        <Route
+          path="/live"
           element={
             <PageLayout>
               <LivePage />
             </PageLayout>
-          } 
+          }
         />
-        <Route 
-          path="/videoaulas" 
+        <Route
+          path="/videoaulas"
           element={
             <PageLayout>
               <VideoAulasPage />
             </PageLayout>
-          } 
+          }
         />
-        <Route 
-          path="/Biblioteca" 
+        <Route
+          path="/biblioteca"
           element={
             <PageLayout>
-              <Biblioteca/>
+              <Biblioteca />
             </PageLayout>
-          } 
+          }
         />
-        <Route 
-          path="/loja" 
+        <Route
+          path="/loja"
           element={
             <PageLayout>
               <LojaPage />
             </PageLayout>
-          } 
+          }
         />
-        <Route 
-          path="/contato" 
+        <Route
+          path="/contato"
           element={
             <PageLayout>
               <ContatoPage />
             </PageLayout>
-          } 
+          }
         />
-        <Route 
-          path="*" 
+        <Route
+          path="*"
           element={
             <PageLayout>
-              <NotFoundPage />
+              <HomePage /> {/* Redireciona qualquer rota não encontrada para a Home */}
             </PageLayout>
-          } 
+          }
         />
       </Routes>
     </Router>
