@@ -127,7 +127,7 @@ const Navbar = () => {
   alt="Logo"
   className="h-6 w-6 object-contain"
 />
-                <span className="ml-2 text-lg font-semibold">Ripi ia iá</span>
+                <span className="ml-2 text-lg font-semibold">Ripi Iaiá</span>
               </Link>
               <button
                 onClick={closeMenu}

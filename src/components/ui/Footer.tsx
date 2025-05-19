@@ -1,18 +1,17 @@
-import React from 'react';
+import { Facebook, Instagram, Mail, Star, Youtube } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Star, Facebook, Instagram, Youtube, Mail } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-primary-900 text-white">
+    <footer className="bg-primary-800 text-white">
       <div className="container-custom pt-16 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & About */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center">
-              <Star className="text-primary-200 h-6 w-6" />
+              <Star className="text-primary-300 h-6 w-6" />
               <span className="ml-2 text-xl font-display font-semibold text-white">
                 Ripi ia iá
               </span>
@@ -26,7 +25,7 @@ const Footer = () => {
                 href="https://facebook.com" 
                 target="_blank" 
                 rel="noreferrer"
-                className="text-primary-200 hover:text-white transition-colors"
+                className="text-primary-300 hover:text-white transition-colors"
                 aria-label="Facebook"
               >
                 <Facebook size={20} />
@@ -35,7 +34,7 @@ const Footer = () => {
                 href="https://instagram.com" 
                 target="_blank" 
                 rel="noreferrer"
-                className="text-primary-200 hover:text-white transition-colors"
+                className="text-primary-300 hover:text-white transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram size={20} />
@@ -44,7 +43,7 @@ const Footer = () => {
                 href="https://youtube.com" 
                 target="_blank" 
                 rel="noreferrer"
-                className="text-primary-200 hover:text-white transition-colors"
+                className="text-primary-300 hover:text-white transition-colors"
                 aria-label="YouTube"
               >
                 <Youtube size={20} />
@@ -52,7 +51,7 @@ const Footer = () => {
             </div>
           </div>
           
-          {/* Links Rápidos */}
+          {/* Quick Links */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-white">Links Rápidos</h3>
             <ul className="space-y-2">
@@ -84,7 +83,7 @@ const Footer = () => {
             </ul>
           </div>
           
-          {/* Acervo */}
+          {/* Archive */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-white">Acervo</h3>
             <ul className="space-y-2">
@@ -111,18 +110,18 @@ const Footer = () => {
             </ul>
           </div>
           
-          {/* Contato */}
+          {/* Contact */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-white">Contato</h3>
             <div className="space-y-4">
               <p className="flex items-start text-sm">
-                <Mail className="mr-2 h-5 w-5 text-primary-200 shrink-0" />
+                <Mail className="mr-2 h-5 w-5 text-primary-300 shrink-0" />
                 <span className="text-primary-100">contato@ripiaia.com.br</span>
               </p>
               <div>
                 <Link 
                   to="/contato" 
-                  className="inline-block bg-primary-700 hover:bg-primary-600 px-4 py-2 rounded-md text-white text-sm font-medium transition-colors"
+                  className="inline-block bg-primary-600 hover:bg-primary-500 px-4 py-2 rounded-md text-white text-sm font-medium transition-colors"
                 >
                   Enviar Mensagem
                 </Link>
@@ -132,17 +131,17 @@ const Footer = () => {
         </div>
         
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-primary-800">
+        <div className="mt-12 pt-8 border-t border-primary-700">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-primary-300 text-sm">
+            <p className="text-primary-200 text-sm">
               &copy; {currentYear} Ripi ia iá. Todos os direitos reservados.
             </p>
             
             <div className="mt-4 md:mt-0 space-x-4 text-sm">
-              <Link to="/termos" className="text-primary-300 hover:text-white transition-colors">
+              <Link to="/termos" className="text-primary-200 hover:text-white transition-colors">
                 Termos de Uso
               </Link>
-              <Link to="/privacidade" className="text-primary-300 hover:text-white transition-colors">
+              <Link to="/privacidade" className="text-primary-200 hover:text-white transition-colors">
                 Política de Privacidade
               </Link>
             </div>

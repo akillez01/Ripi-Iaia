@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Play, Pause, Volume2, Volume1, VolumeX, SkipForward, SkipBack } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Pause, Play, SkipBack, SkipForward, Volume1, Volume2, VolumeX } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // Mock data
 const mockTracks = [
@@ -9,16 +9,16 @@ const mockTracks = [
     title: 'Lua Branca',
     artist: 'Mestre Irineu',
     duration: 183,
-    imageUrl: 'https://images.pexels.com/photos/1021876/pexels-photo-1021876.jpeg?auto=compress&cs=tinysrgb&w=600',
-    audioUrl: '#'
+    imageUrl: `${import.meta.env.BASE_URL}image/mad-rita.jpg`,
+    audioUrl: `${import.meta.env.BASE_URL}audio/lua-branca/01.mp3`
   },
   {
     id: '2',
-    title: 'Sol, Lua, Estrela',
-    artist: 'Padrinho Sebastião',
-    duration: 241,
-    imageUrl: 'https://images.pexels.com/photos/1252890/pexels-photo-1252890.jpeg?auto=compress&cs=tinysrgb&w=600',
-    audioUrl: '#'
+    title: 'Do banco',
+    artist: 'Outro Artista',
+    duration: 200,
+    imageUrl: 'https://insarmvkxbspphpmttix.supabase.co/storage/v1/object/public/ripi-storage/images/mad-rita.jpg',
+    audioUrl: 'https://insarmvkxbspphpmttix.supabase.co/storage/v1/object/public/ripi-storage/lua-branca/01.mp3'
   },
   {
     id: '3',
@@ -70,60 +70,58 @@ const RadioPage = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [currentScheduleIndex, setCurrentScheduleIndex] = useState(0);
 
-  // Simulate playing the radio
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Sincroniza play/pause com o elemento <audio>
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    
+    if (!audioRef.current) return;
     if (isPlaying) {
-      timer = setInterval(() => {
-        setCurrentTime((prev) => {
-          if (prev >= currentTrack.duration) {
-            // Move to next track
-            const currentIndex = mockTracks.findIndex(track => track.id === currentTrack.id);
-            const nextIndex = (currentIndex + 1) % mockTracks.length;
-            setCurrentTrack(mockTracks[nextIndex]);
-            return 0;
-          }
-          return prev + 1;
-        });
-      }, 1000);
+      audioRef.current.play();
+    } else {
+      audioRef.current.pause();
     }
-    
-    return () => {
-      if (timer) clearInterval(timer);
-    };
   }, [isPlaying, currentTrack]);
 
-  // Simulate changing schedule
+  // Sincroniza volume e mute
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentScheduleIndex((prev) => (prev + 1) % scheduleItems.length);
-    }, 30000); // Change every 30 seconds for demo purposes
-    
-    return () => clearInterval(timer);
-  }, []);
+    if (!audioRef.current) return;
+    audioRef.current.volume = volume;
+    audioRef.current.muted = isMuted;
+  }, [volume, isMuted]);
+
+  // Atualiza currentTime quando o usuário mexe na barra de progresso
+  const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTime = parseFloat(e.target.value);
+    setCurrentTime(newTime);
+    if (audioRef.current) {
+      audioRef.current.currentTime = newTime;
+    }
+  };
+
+  // Atualiza currentTime conforme o áudio toca
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  // Troca para a próxima faixa ao terminar
+  const handleEnded = () => {
+    nextTrack();
+  };
 
   const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
+    setIsPlaying((prev) => !prev);
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
-    if (newVolume === 0) {
-      setIsMuted(true);
-    } else {
-      setIsMuted(false);
-    }
+    setIsMuted(newVolume === 0);
   };
 
   const toggleMute = () => {
-    setIsMuted(!isMuted);
-  };
-
-  const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = parseFloat(e.target.value);
-    setCurrentTime(newTime);
+    setIsMuted((prev) => !prev);
   };
 
   const nextTrack = () => {
@@ -131,6 +129,7 @@ const RadioPage = () => {
     const nextIndex = (currentIndex + 1) % mockTracks.length;
     setCurrentTrack(mockTracks[nextIndex]);
     setCurrentTime(0);
+    setIsPlaying(true);
   };
 
   const prevTrack = () => {
@@ -138,11 +137,20 @@ const RadioPage = () => {
     const prevIndex = currentIndex === 0 ? mockTracks.length - 1 : currentIndex - 1;
     setCurrentTrack(mockTracks[prevIndex]);
     setCurrentTime(0);
+    setIsPlaying(true);
   };
 
   const isCurrentlyPlaying = (id: string) => {
     return currentTrack.id === id && isPlaying;
   };
+
+  // Simula mudança de programação
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentScheduleIndex((prev) => (prev + 1) % scheduleItems.length);
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div>
@@ -167,6 +175,15 @@ const RadioPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Player & Current Track */}
             <div className="lg:col-span-2">
+              {/* Elemento de áudio controlado */}
+              <audio
+                ref={audioRef}
+                src={currentTrack.audioUrl}
+                onTimeUpdate={handleTimeUpdate}
+                onEnded={handleEnded}
+                autoPlay={isPlaying}
+                style={{ display: 'none' }}
+              />
               <div className="bg-white rounded-lg shadow-md p-6 mb-8">
                 <div className="flex flex-col md:flex-row items-center">
                   <div className="w-full md:w-48 h-48 mb-6 md:mb-0 md:mr-6 rounded-lg overflow-hidden">
@@ -176,13 +193,11 @@ const RadioPage = () => {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  
                   <div className="flex-1">
                     <div className="mb-4">
                       <h2 className="text-2xl font-semibold mb-1">{currentTrack.title}</h2>
                       <p className="text-gray-600">{currentTrack.artist}</p>
                     </div>
-                    
                     <div className="mb-4">
                       <div className="flex justify-between text-sm text-gray-500 mb-1">
                         <span>{formatTime(currentTime)}</span>
@@ -197,7 +212,6 @@ const RadioPage = () => {
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                       />
                     </div>
-                    
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <button 
@@ -207,7 +221,6 @@ const RadioPage = () => {
                         >
                           <SkipBack className="w-6 h-6" />
                         </button>
-                        
                         <button 
                           onClick={handlePlayPause}
                           className="p-4 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors"
@@ -215,7 +228,6 @@ const RadioPage = () => {
                         >
                           {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
                         </button>
-                        
                         <button 
                           onClick={nextTrack}
                           className="p-2 text-gray-700 hover:text-primary-600 transition-colors"
@@ -224,7 +236,6 @@ const RadioPage = () => {
                           <SkipForward className="w-6 h-6" />
                         </button>
                       </div>
-                      
                       <div className="flex items-center">
                         <button 
                           onClick={toggleMute}
@@ -239,7 +250,6 @@ const RadioPage = () => {
                             <Volume2 className="w-5 h-5" />
                           )}
                         </button>
-                        
                         <input
                           type="range"
                           min="0"
@@ -254,13 +264,11 @@ const RadioPage = () => {
                   </div>
                 </div>
               </div>
-              
               {/* Playlist */}
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="p-4 bg-primary-50 border-b border-primary-100">
                   <h3 className="font-semibold text-primary-800">Playlist Atual</h3>
                 </div>
-                
                 <div className="divide-y">
                   {mockTracks.map((track) => (
                     <div 
@@ -276,17 +284,14 @@ const RadioPage = () => {
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-gray-900 truncate">{track.title}</h4>
                         <p className="text-sm text-gray-500 truncate">{track.artist}</p>
                       </div>
-                      
                       <div className="flex items-center ml-4">
                         <span className="text-sm text-gray-500 mr-4">
                           {formatTime(track.duration)}
                         </span>
-                        
                         <button 
                           onClick={() => {
                             setCurrentTrack(track);
@@ -312,10 +317,8 @@ const RadioPage = () => {
                 </div>
               </div>
             </div>
-            
             {/* Sidebar - Schedule & Info */}
             <div>
-              {/* Currently On Air */}
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -327,25 +330,20 @@ const RadioPage = () => {
                   <h3 className="font-semibold">No Ar Agora</h3>
                   <span className="text-sm bg-white/20 px-2 py-1 rounded">Ao Vivo</span>
                 </div>
-                
                 <h2 className="text-xl font-semibold mb-2">
                   {scheduleItems[currentScheduleIndex].title}
                 </h2>
                 <p className="text-primary-100 mb-4">
                   {scheduleItems[currentScheduleIndex].description}
                 </p>
-                
                 <div className="text-sm text-primary-100">
                   Início: {scheduleItems[currentScheduleIndex].time}
                 </div>
               </motion.div>
-              
-              {/* Today's Schedule */}
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="p-4 bg-primary-50 border-b border-primary-100">
                   <h3 className="font-semibold text-primary-800">Programação do Dia</h3>
                 </div>
-                
                 <div className="divide-y">
                   {scheduleItems.map((item, index) => (
                     <div 
@@ -365,8 +363,6 @@ const RadioPage = () => {
                   ))}
                 </div>
               </div>
-              
-              {/* Additional Info */}
               <div className="mt-8 bg-earth-50 rounded-lg p-6">
                 <h3 className="font-semibold text-gray-800 mb-3">Sobre a Rádio</h3>
                 <p className="text-sm text-gray-700 mb-4">

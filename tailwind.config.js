@@ -5,18 +5,19 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#ECFDF4',
-          100: '#D1FAE0',
-          200: '#A7F3C9',
-          300: '#6EE7AC',
-          400: '#34D38B',
-          500: '#10B981',
-          600: '#059669',
-          700: '#047857',
-          800: '#065F46',
-          900: '#064E3B',
-          950: '#022C22',
+          50:  '#FBF9F5',  // bege muito claro
+          100: '#F4F0E5',  // bege claro
+          200: '#E9E0C8',  // creme suave
+          300: '#D7C9A0',  // bege areia
+          400: '#C3B07A',  // bege amarelado
+          500: '#AD9963',  // caramelo suave
+          600: '#998857',  // caramelo médio
+          700: '#877A4F',  // tom mais ameno
+          800: '#7C6E52',  // tom mais escuro definido
+          900: '#716349',  // ligeiramente mais denso
+          950: '#665A43',  // opcional — se quiser mais contraste, pode remover
         },
+        // Manter outras cores se desejar
         secondary: {
           50: '#F0F9FF',
           100: '#E0F2FE',
