@@ -12,6 +12,7 @@ const navItems = [
   { name: 'Rádio', path: '/radio' },
   { name: 'Loja', path: '/loja' },
   { name: 'Contato', path: '/contato' },
+  { name: 'Posts (Admin)', path: '/admin/posts' },
 ];
 
 const Navbar = () => {

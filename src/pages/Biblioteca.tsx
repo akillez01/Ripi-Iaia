@@ -1,6 +1,16 @@
-import { motion } from 'framer-motion';
-import { Pause, Play, SkipBack, SkipForward, Volume1, Volume2, VolumeX } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronDown, ChevronUp, Pause, Play } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useAudioPlayer } from '../context/AudioPlayerContext';
+
+// Função para tratar links do Google Drive
+function getPdfViewerUrl(pdfUrl: string) {
+  const driveMatch = pdfUrl.match(/https:\/\/drive\.google\.com\/file\/d\/([^/]+)\/?.*/);
+  if (driveMatch) {
+    return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+  }
+  return pdfUrl;
+}
 
 // Mock de álbuns e faixas
 const albums = [
@@ -9,7 +19,7 @@ const albums = [
     title: 'Hinário Lua Branca',
     artist: 'Mestre Irineu',
     cover: `${import.meta.env.BASE_URL}image/mad-rita.jpg`,
-    pdfUrl: `${import.meta.env.BASE_URL}pdf/lua-branca.pdf`,
+    pdfUrl: 'https://drive.google.com/file/d/1SvfNvayOQEd8PB4DrFVsIUK-FPTqWJfd/view?usp=drive_link',
     tracks: [
       {
         id: '1',
@@ -57,84 +67,30 @@ const formatTime = (seconds: number): string => {
 const Biblioteca = () => {
   const [selectedAlbum, setSelectedAlbum] = useState(albums[0]);
   const [currentTrack, setCurrentTrack] = useState(albums[0].tracks[0]);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.8);
-  const [isMuted, setIsMuted] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [openAlbumId, setOpenAlbumId] = useState<string | null>(albums[0].id);
 
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const { setFooterPlayer, footerPlayer } = useAudioPlayer();
 
   useEffect(() => {
     setCurrentTrack(selectedAlbum.tracks[0]);
-    setCurrentTime(0);
-    setIsPlaying(false);
   }, [selectedAlbum]);
 
-  useEffect(() => {
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.play();
-    } else {
-      audioRef.current.pause();
+  const handleAlbumClick = (album: typeof albums[0]) => {
+    setSelectedAlbum(album);
+    setOpenAlbumId(album.id === openAlbumId ? null : album.id);
+  };
+
+  const handleTrackClick = (track: typeof albums[0]['tracks'][0], album: typeof albums[0]) => {
+    setSelectedAlbum(album);
+    setCurrentTrack(track);
+    setOpenAlbumId(album.id);
+    if (track.audioUrl && track.audioUrl !== '#') {
+      setFooterPlayer({
+        audioUrl: track.audioUrl,
+        title: track.title,
+        artist: album.artist,
+      });
     }
-  }, [isPlaying, currentTrack]);
-
-  useEffect(() => {
-    if (!audioRef.current) return;
-    audioRef.current.volume = volume;
-    audioRef.current.muted = isMuted;
-  }, [volume, isMuted]);
-
-  const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = parseFloat(e.target.value);
-    setCurrentTime(newTime);
-    if (audioRef.current) {
-      audioRef.current.currentTime = newTime;
-    }
-  };
-
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
-    }
-  };
-
-  const handleEnded = () => {
-    nextTrack();
-  };
-
-  const handlePlayPause = () => {
-    setIsPlaying((prev) => !prev);
-  };
-
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
-    setIsMuted(newVolume === 0);
-  };
-
-  const toggleMute = () => {
-    setIsMuted((prev) => !prev);
-  };
-
-  const nextTrack = () => {
-    const currentIndex = selectedAlbum.tracks.findIndex(track => track.id === currentTrack.id);
-    const nextIndex = (currentIndex + 1) % selectedAlbum.tracks.length;
-    setCurrentTrack(selectedAlbum.tracks[nextIndex]);
-    setCurrentTime(0);
-    setIsPlaying(true);
-  };
-
-  const prevTrack = () => {
-    const currentIndex = selectedAlbum.tracks.findIndex(track => track.id === currentTrack.id);
-    const prevIndex = currentIndex === 0 ? selectedAlbum.tracks.length - 1 : currentIndex - 1;
-    setCurrentTrack(selectedAlbum.tracks[prevIndex]);
-    setCurrentTime(0);
-    setIsPlaying(true);
-  };
-
-  const isCurrentlyPlaying = (id: string) => {
-    return currentTrack.id === id && isPlaying;
   };
 
   return (
@@ -159,17 +115,36 @@ const Biblioteca = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Player & PDF */}
             <div className="lg:col-span-2 flex flex-col md:flex-row gap-8">
-              {/* Player */}
+              {/* Playlist */}
               <div className="flex-1 bg-white rounded-lg shadow-md p-6 mb-8">
-                <audio
-                  ref={audioRef}
-                  src={currentTrack.audioUrl}
-                  onTimeUpdate={handleTimeUpdate}
-                  onEnded={handleEnded}
-                  autoPlay={isPlaying}
-                  style={{ display: 'none' }}
-                />
-                <div className="flex flex-col items-center">
+                <h3 className="font-semibold text-primary-800 mb-2">Faixas do Álbum</h3>
+                <ul className="divide-y">
+                  {selectedAlbum.tracks.map((track) => (
+                    <li
+                      key={track.id}
+                      className={`flex items-center group p-3 rounded-lg transition ${
+                        track.id === currentTrack.id
+                          ? 'bg-primary-100 shadow font-semibold text-primary-900'
+                          : 'hover:bg-primary-50'
+                      }`}
+                    >
+                      <button
+                        className="mr-3 p-2 rounded-full bg-primary-50 hover:bg-primary-200 transition"
+                        onClick={() => handleTrackClick(track, selectedAlbum)}
+                        aria-label={footerPlayer && footerPlayer.title === track.title ? "Pausar" : "Reproduzir"}
+                      >
+                        {footerPlayer && footerPlayer.title === track.title ? (
+                          <Pause className="w-5 h-5 text-primary-700" />
+                        ) : (
+                          <Play className="w-5 h-5 text-primary-700" />
+                        )}
+                      </button>
+                      <span className="flex-1 truncate">{track.title}</span>
+                      <span className="ml-3 text-xs text-gray-500">{formatTime(track.duration)}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex flex-col items-center mt-8">
                   <img
                     src={selectedAlbum.cover}
                     alt={selectedAlbum.title}
@@ -177,114 +152,13 @@ const Biblioteca = () => {
                   />
                   <h2 className="text-xl font-semibold mb-1">{currentTrack.title}</h2>
                   <p className="text-gray-600 mb-4">{selectedAlbum.artist}</p>
-                  <div className="mb-4 w-full">
-                    <div className="flex justify-between text-sm text-gray-500 mb-1">
-                      <span>{formatTime(currentTime)}</span>
-                      <span>{formatTime(currentTrack.duration)}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max={currentTrack.duration}
-                      value={currentTime}
-                      onChange={handleProgressChange}
-                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center space-x-4">
-                      <button
-                        onClick={prevTrack}
-                        className="p-2 text-gray-700 hover:text-primary-600 transition-colors"
-                        aria-label="Anterior"
-                      >
-                        <SkipBack className="w-6 h-6" />
-                      </button>
-                      <button
-                        onClick={handlePlayPause}
-                        className="p-4 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors"
-                        aria-label={isPlaying ? "Pausar" : "Reproduzir"}
-                      >
-                        {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
-                      </button>
-                      <button
-                        onClick={nextTrack}
-                        className="p-2 text-gray-700 hover:text-primary-600 transition-colors"
-                        aria-label="Próximo"
-                      >
-                        <SkipForward className="w-6 h-6" />
-                      </button>
-                    </div>
-                    <div className="flex items-center">
-                      <button
-                        onClick={toggleMute}
-                        className="p-2 text-gray-700 hover:text-primary-600 transition-colors"
-                        aria-label={isMuted ? "Ativar som" : "Silenciar"}
-                      >
-                        {isMuted || volume === 0 ? (
-                          <VolumeX className="w-5 h-5" />
-                        ) : volume < 0.5 ? (
-                          <Volume1 className="w-5 h-5" />
-                        ) : (
-                          <Volume2 className="w-5 h-5" />
-                        )}
-                      </button>
-                      <input
-                        type="range"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        value={isMuted ? 0 : volume}
-                        onChange={handleVolumeChange}
-                        className="w-24 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                      />
-                    </div>
-                  </div>
-                </div>
-                {/* Playlist estilo SoundCloud */}
-                <div className="mt-8">
-                  <h3 className="font-semibold text-primary-800 mb-2">Faixas do Álbum</h3>
-                  <div className="divide-y">
-                    {selectedAlbum.tracks.map((track) => (
-                      <div
-                        key={track.id}
-                        className={`flex items-center p-3 hover:bg-primary-50 cursor-pointer ${
-                          track.id === currentTrack.id ? 'bg-primary-50' : ''
-                        }`}
-                        onClick={() => {
-                          setCurrentTrack(track);
-                          setCurrentTime(0);
-                          setIsPlaying(true);
-                        }}
-                      >
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-gray-900 truncate">{track.title}</h4>
-                        </div>
-                        <span className="text-xs text-gray-500 ml-3">{formatTime(track.duration)}</span>
-                        <button
-                          className={`ml-4 p-2 rounded-full ${
-                            isCurrentlyPlaying(track.id)
-                              ? 'bg-primary-100 text-primary-700'
-                              : 'text-gray-500 hover:text-primary-600'
-                          }`}
-                          aria-label={isCurrentlyPlaying(track.id) ? "Pausar" : "Reproduzir"}
-                        >
-                          {isCurrentlyPlaying(track.id) ? (
-                            <Pause className="w-5 h-5" />
-                          ) : (
-                            <Play className="w-5 h-5" />
-                          )}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </div>
               {/* PDF Viewer */}
               <div className="flex-1 bg-white rounded-lg shadow-md p-6 mb-8 flex flex-col items-center">
                 <h3 className="font-semibold text-primary-800 mb-2">Hinário em PDF</h3>
                 <iframe
-                  src={selectedAlbum.pdfUrl}
+                  src={getPdfViewerUrl(selectedAlbum.pdfUrl)}
                   title="Hinário PDF"
                   className="w-full h-[600px] rounded border"
                 />
@@ -298,7 +172,7 @@ const Biblioteca = () => {
                 </a>
               </div>
             </div>
-            {/* Sidebar - Álbuns */}
+            {/* Sidebar - Álbuns com menu interativo */}
             <div>
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="p-4 bg-primary-50 border-b border-primary-100">
@@ -306,31 +180,69 @@ const Biblioteca = () => {
                 </div>
                 <div className="divide-y">
                   {albums.map((album) => (
-                    <motion.div
-                      key={album.id}
-                      whileHover={{ backgroundColor: '#F3F4F6' }}
-                      className={`p-4 flex items-center cursor-pointer ${
-                        selectedAlbum.id === album.id ? 'bg-primary-50' : ''
-                      }`}
-                      onClick={() => setSelectedAlbum(album)}
-                    >
-                      <img
-                        src={album.cover}
-                        alt={album.title}
-                        className="w-12 h-12 rounded mr-3 object-cover"
-                      />
-                      <div>
-                        <h4 className="font-medium text-gray-900">{album.title}</h4>
-                        <p className="text-xs text-gray-500">{album.artist}</p>
-                      </div>
-                    </motion.div>
+                    <div key={album.id}>
+                      <button
+                        className={`w-full flex items-center p-4 cursor-pointer transition-colors ${
+                          selectedAlbum.id === album.id ? 'bg-primary-50' : ''
+                        }`}
+                        onClick={() => handleAlbumClick(album)}
+                        aria-expanded={openAlbumId === album.id}
+                        aria-controls={`tracks-${album.id}`}
+                      >
+                        <img
+                          src={album.cover}
+                          alt={album.title}
+                          className="w-12 h-12 rounded mr-3 object-cover"
+                        />
+                        <div className="flex-1 text-left">
+                          <h4 className="font-medium text-gray-900">{album.title}</h4>
+                          <p className="text-xs text-gray-500">{album.artist}</p>
+                        </div>
+                        {openAlbumId === album.id ? (
+                          <ChevronUp className="ml-2 w-5 h-5 text-primary-600" />
+                        ) : (
+                          <ChevronDown className="ml-2 w-5 h-5 text-gray-400" />
+                        )}
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {openAlbumId === album.id && (
+                          <motion.div
+                            id={`tracks-${album.id}`}
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden bg-primary-50"
+                          >
+                            <ul>
+                              {album.tracks.map((track) => (
+                                <li key={track.id}>
+                                  <button
+                                    className={`w-full flex items-center px-6 py-2 text-left hover:bg-primary-100 transition-colors ${
+                                      currentTrack.id === track.id && selectedAlbum.id === album.id
+                                        ? 'bg-primary-100 font-semibold text-primary-700'
+                                        : 'text-gray-800'
+                                    }`}
+                                    onClick={() => handleTrackClick(track, album)}
+                                  >
+                                    <Play className="w-4 h-4 mr-2 text-primary-600" />
+                                    <span className="flex-1 truncate">{track.title}</span>
+                                    <span className="ml-2 text-xs text-gray-500">{formatTime(track.duration)}</span>
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   ))}
                 </div>
               </div>
               <div className="mt-8 bg-earth-50 rounded-lg p-6">
                 <h3 className="font-semibold text-gray-800 mb-3">Como usar</h3>
                 <p className="text-sm text-gray-700 mb-4">
-                  Escolha um álbum/hinário, selecione a faixa e acompanhe a letra pelo PDF ao lado. Ideal para estudo e prática do canto.
+                  Escolha um álbum/hinário, clique para expandir e selecione o hino desejado para ouvir e acompanhar pelo PDF ao lado.
                 </p>
               </div>
             </div>

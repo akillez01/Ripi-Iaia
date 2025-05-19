@@ -19,8 +19,8 @@ const videoAulas = [
     category: 'hinario',
     duration: 420,
     created_at: '2024-05-01T10:00:00',
-    thumbnailUrl: `${import.meta.env.BASE_URL}image/video-thumb-1.jpg`,
-    videoUrl: `${import.meta.env.BASE_URL}video/videoaula-1.mp4`,
+    thumbnailUrl: `${import.meta.env.BASE_URL}image/pd-serbatiao.jpeg`,
+    videoUrl: 'https://drive.google.com/file/d/1aNYjqqIrF8eBkPjQaFP2YNrXfP-u96T6/preview',
   },
   {
     id: '2',
@@ -29,7 +29,7 @@ const videoAulas = [
     category: 'musica',
     duration: 600,
     created_at: '2024-05-10T14:00:00',
-    thumbnailUrl: `${import.meta.env.BASE_URL}image/video-thumb-2.jpg`,
+    thumbnailUrl: `${import.meta.env.BASE_URL}image/pd-serbatiao.jpeg`,
     videoUrl: 'https://youtu.be/CAbcQ5o2nKQ',
   },
   {
@@ -39,7 +39,7 @@ const videoAulas = [
     category: 'teoria',
     duration: 900,
     created_at: '2024-05-15T18:00:00',
-    thumbnailUrl: 'https://images.pexels.com/photos/164936/pexels-photo-164936.jpeg?auto=compress&cs=tinysrgb&w=600',
+    thumbnailUrl: `${import.meta.env.BASE_URL}image/pd-serbatiao.jpeg`,
     videoUrl: '#',
   },
   {
@@ -49,7 +49,7 @@ const videoAulas = [
     category: 'instrumentos',
     duration: 780,
     created_at: '2024-05-20T16:00:00',
-    thumbnailUrl: 'https://images.pexels.com/photos/164936/pexels-photo-164936.jpeg?auto=compress&cs=tinysrgb&w=600',
+    thumbnailUrl: `${import.meta.env.BASE_URL}image/pd-serbatiao.jpeg`,
     videoUrl: '#',
   },
 ];
@@ -59,6 +59,11 @@ function getYouTubeId(url: string) {
   const regExp = /^.*(youtu\.be\/|v=|\/embed\/|watch\?v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
   return match && match[2].length === 11 ? match[2] : null;
+}
+
+// Função para detectar se é um link de preview do Google Drive
+function isGoogleDrivePreview(url: string) {
+  return url.includes('drive.google.com') && url.includes('/preview');
 }
 
 const formatTime = (seconds: number): string => {
@@ -129,7 +134,7 @@ const VideoAulasPage = () => {
     setIsPlaying(true);
     setCurrentTime(0);
     setTimeout(() => {
-      if (videoRef.current && video.videoUrl && video.videoUrl !== '#' && !getYouTubeId(video.videoUrl)) {
+      if (videoRef.current && video.videoUrl && video.videoUrl !== '#' && !getYouTubeId(video.videoUrl) && !isGoogleDrivePreview(video.videoUrl)) {
         videoRef.current.currentTime = 0;
         videoRef.current.volume = volume;
         videoRef.current.muted = isMuted;
@@ -143,7 +148,7 @@ const VideoAulasPage = () => {
     setShowPlayer(true);
     setIsPlaying(true);
     setTimeout(() => {
-      if (videoRef.current && !getYouTubeId(selectedVideo.videoUrl)) videoRef.current.play();
+      if (videoRef.current && !getYouTubeId(selectedVideo.videoUrl) && !isGoogleDrivePreview(selectedVideo.videoUrl)) videoRef.current.play();
     }, 100);
   };
 
@@ -153,6 +158,7 @@ const VideoAulasPage = () => {
 
   const canWatch = !!selectedVideo.videoUrl && selectedVideo.videoUrl !== '#';
   const isYouTube = selectedVideo.videoUrl && getYouTubeId(selectedVideo.videoUrl);
+  const isDrive = selectedVideo.videoUrl && isGoogleDrivePreview(selectedVideo.videoUrl);
 
   return (
     <div>
@@ -198,6 +204,14 @@ const VideoAulasPage = () => {
                           allowFullScreen
                           className="absolute inset-0 w-full h-full rounded-lg bg-black"
                         />
+                      ) : isDrive ? (
+                        <iframe
+                          src={selectedVideo.videoUrl}
+                          title={selectedVideo.title}
+                          allow="autoplay"
+                          allowFullScreen
+                          className="absolute inset-0 w-full h-full rounded-lg bg-black"
+                        />
                       ) : (
                         <video
                           ref={videoRef}
@@ -239,7 +253,7 @@ const VideoAulasPage = () => {
                     )}
 
                     {/* Controles do player (apenas para vídeos locais) */}
-                    {showPlayer && selectedVideo.videoUrl && selectedVideo.videoUrl !== '#' && !isYouTube && (
+                    {showPlayer && selectedVideo.videoUrl && selectedVideo.videoUrl !== '#' && !isYouTube && !isDrive && (
                       <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-2">
                         <div className="flex items-center space-x-2">
                           <button

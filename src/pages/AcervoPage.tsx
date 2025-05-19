@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Book, Music, Video, File, Search, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Book, File, Music, Search, Video, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link, Route, Routes, useLocation } from 'react-router-dom';
 
 // Mock data for demonstration
 const mockAcervoItems = [
@@ -11,7 +11,7 @@ const mockAcervoItems = [
     description: 'Hinário do Mestre Irineu Serra, fundador da doutrina.',
     type: 'pdf',
     category: 'hinarios',
-    url: '#',
+    url: 'https://drive.google.com/file/d/1SvfNvayOQEd8PB4DrFVsIUK-FPTqWJfd/preview', // PDF
     thumbnailUrl: 'https://images.pexels.com/photos/2846814/pexels-photo-2846814.jpeg?auto=compress&cs=tinysrgb&w=600',
     dateAdded: '2023-06-15',
   },
@@ -21,7 +21,7 @@ const mockAcervoItems = [
     description: 'Hinário de Sebastião Mota de Melo.',
     type: 'pdf',
     category: 'hinarios',
-    url: '#',
+    url: 'https://drive.google.com/file/d/1Qw8wQw8wQw8wQw8wQw8wQw8wQw8wQw8/preview', // Exemplo PDF
     thumbnailUrl: 'https://images.pexels.com/photos/4706139/pexels-photo-4706139.jpeg?auto=compress&cs=tinysrgb&w=600',
     dateAdded: '2023-05-20',
   },
@@ -31,7 +31,7 @@ const mockAcervoItems = [
     description: 'Partitura do hino Nova Jerusalém do hinário O Cruzeiro.',
     type: 'pdf',
     category: 'partituras',
-    url: '#',
+    url: 'https://drive.google.com/file/d/1RrRrRrRrRrRrRrRrRrRrRrRrRrRrRrR/preview', // Exemplo PDF
     thumbnailUrl: 'https://images.pexels.com/photos/6966/abstract-music-rock-bw.jpg?auto=compress&cs=tinysrgb&w=600',
     dateAdded: '2023-07-10',
   },
@@ -41,7 +41,7 @@ const mockAcervoItems = [
     description: 'Gravação ao vivo dos hinos do Mestre Irineu.',
     type: 'audio',
     category: 'audios',
-    url: '#',
+    url: 'https://drive.google.com/uc?export=download&id=1a2b3c4d5e6f7g8h9i0j', // Áudio real
     thumbnailUrl: 'https://images.pexels.com/photos/1626481/pexels-photo-1626481.jpeg?auto=compress&cs=tinysrgb&w=600',
     dateAdded: '2023-08-05',
   },
@@ -51,17 +51,27 @@ const mockAcervoItems = [
     description: 'Vídeo do ensaio da banda tocando o hinário São João.',
     type: 'video',
     category: 'videos',
-    url: '#',
-    thumbnailUrl: 'https://images.pexels.com/photos/111287/pexels-photo-111287.jpeg?auto=compress&cs=tinysrgb&w=600',
+    url: 'https://drive.google.com/file/d/1nUve56uR8WGot-gX7HduWifap4GnER3O/preview',
+   thumbnailUrl: `${import.meta.env.BASE_URL}image/Floresta.jpeg`,
     dateAdded: '2023-09-12',
-  },
+},
   {
     id: '6',
+    title: 'Flor da montanha',
+    description: 'Vídeo do ensaio da banda tocando o hinário São João.',
+    type: 'video',
+    category: 'videos',
+    url: 'https://www.youtube.com/embed/CAbcQ5o2nKQ', // Corrigido para embed do YouTube
+    thumbnailUrl: `${import.meta.env.BASE_URL}image/mad-rita.jpg`,
+    dateAdded: '2023-09-12',
+},
+  {
+    id: '7',
     title: 'Hinos da Rainha da Floresta',
     description: 'Coletânea de hinos dedicados à Rainha da Floresta.',
     type: 'audio',
     category: 'audios',
-    url: '#',
+    url: 'https://drive.google.com/uc?export=download&id=1x2y3z4w5v6u7t8s9r0q', // Áudio real
     thumbnailUrl: 'https://images.pexels.com/photos/3961942/pexels-photo-3961942.jpeg?auto=compress&cs=tinysrgb&w=600',
     dateAdded: '2023-10-01',
   }
@@ -74,24 +84,23 @@ const categories = [
   { name: 'Vídeos', slug: 'videos', icon: <Video className="w-5 h-5" /> },
 ];
 
+const DRIVE_FOLDER_URL = 'https://drive.google.com/drive/folders/1A2B3C4D5E6F7G8H9I0J'; // Troque pelo seu ID de pasta
+
 const AcervoHome = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState(mockAcervoItems);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!searchTerm.trim()) {
       setFilteredItems(mockAcervoItems);
       return;
     }
-    
     const filtered = mockAcervoItems.filter(
-      item => 
+      item =>
         item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    
     setFilteredItems(filtered);
   };
 
@@ -103,14 +112,24 @@ const AcervoHome = () => {
   return (
     <div className="section">
       <div className="container-custom">
-        <div className="max-w-3xl mx-auto text-center mb-12">
+        <div className="max-w-3xl mx-auto text-center mb-6">
           <h1 className="section-title mb-4">Acervo Digital</h1>
           <p className="text-lg text-gray-700">
             Explore nossa coleção de hinários, partituras, áudios e vídeos
             da tradição do Santo Daime.
           </p>
         </div>
-
+        {/* Link para a pasta do Drive */}
+        <div className="flex justify-center mb-8">
+          <a
+            href={DRIVE_FOLDER_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-outline"
+          >
+            Acessar pasta completa no Google Drive
+          </a>
+        </div>
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto mb-12">
           <form onSubmit={handleSearch} className="relative">
@@ -142,7 +161,6 @@ const AcervoHome = () => {
             </button>
           </form>
         </div>
-
         {/* Categories */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           {categories.map((category) => (
@@ -156,12 +174,10 @@ const AcervoHome = () => {
             </Link>
           ))}
         </div>
-
         {/* Featured Items */}
         <h2 className="text-2xl font-semibold mb-6">
           {searchTerm ? 'Resultados da Busca' : 'Itens em Destaque'}
         </h2>
-
         {filteredItems.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600">Nenhum resultado encontrado para "{searchTerm}"</p>
@@ -183,9 +199,9 @@ const AcervoHome = () => {
                 className="card overflow-hidden"
               >
                 <div className="h-48 bg-gray-200 relative">
-                  <img 
+                  <img
                     src={item.thumbnailUrl}
-                    alt={item.title} 
+                    alt={item.title}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-2 right-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
@@ -210,8 +226,8 @@ const AcervoHome = () => {
                     <span className="text-sm text-gray-500">
                       Adicionado: {new Date(item.dateAdded).toLocaleDateString('pt-BR')}
                     </span>
-                    <Link 
-                      to={`/acervo/${item.category}/${item.id}`} 
+                    <Link
+                      to={`/acervo/${item.category}/${item.id}`}
                       className="text-primary-600 hover:text-primary-700 text-sm font-medium"
                     >
                       Acessar
@@ -230,10 +246,9 @@ const AcervoHome = () => {
 const CategoryPage = () => {
   const location = useLocation();
   const category = location.pathname.split('/').pop() || '';
-  
   const categoryInfo = categories.find(cat => cat.slug === category);
   const filteredItems = mockAcervoItems.filter(item => item.category === category);
-  
+
   return (
     <div className="section">
       <div className="container-custom">
@@ -246,7 +261,6 @@ const CategoryPage = () => {
             {categoryInfo?.name || 'Categoria'}
           </h1>
         </div>
-        
         {filteredItems.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600">Nenhum item encontrado nesta categoria.</p>
@@ -256,9 +270,9 @@ const CategoryPage = () => {
             {filteredItems.map((item) => (
               <div key={item.id} className="card overflow-hidden">
                 <div className="h-48 bg-gray-200 relative">
-                  <img 
+                  <img
                     src={item.thumbnailUrl}
-                    alt={item.title} 
+                    alt={item.title}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-2 right-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
@@ -277,8 +291,8 @@ const CategoryPage = () => {
                     <span className="text-sm text-gray-500">
                       Adicionado: {new Date(item.dateAdded).toLocaleDateString('pt-BR')}
                     </span>
-                    <Link 
-                      to={`/acervo/${item.category}/${item.id}`} 
+                    <Link
+                      to={`/acervo/${item.category}/${item.id}`}
                       className="text-primary-600 hover:text-primary-700 text-sm font-medium"
                     >
                       Acessar
@@ -299,9 +313,8 @@ const ItemDetail = () => {
   const paths = location.pathname.split('/');
   const category = paths[paths.length - 2];
   const itemId = paths[paths.length - 1];
-  
   const item = mockAcervoItems.find(item => item.id === itemId);
-  
+
   if (!item) {
     return (
       <div className="section">
@@ -316,7 +329,7 @@ const ItemDetail = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="section">
       <div className="container-custom">
@@ -325,8 +338,8 @@ const ItemDetail = () => {
             Acervo
           </Link>
           <span className="text-gray-400 mx-2">/</span>
-          <Link 
-            to={`/acervo/${category}`} 
+          <Link
+            to={`/acervo/${category}`}
             className="text-primary-600 hover:text-primary-700"
           >
             {category === 'hinarios' && 'Hinários'}
@@ -337,13 +350,12 @@ const ItemDetail = () => {
           <span className="text-gray-400 mx-2">/</span>
           <span className="text-gray-800">{item.title}</span>
         </div>
-        
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="md:flex">
             <div className="md:w-1/3">
-              <img 
+              <img
                 src={item.thumbnailUrl}
-                alt={item.title} 
+                alt={item.title}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -359,35 +371,34 @@ const ItemDetail = () => {
                   {item.type.toUpperCase()}
                 </span>
               </div>
-              
               <h1 className="text-2xl font-semibold mb-4">{item.title}</h1>
-              
               <p className="text-gray-600 mb-6">
                 {item.description}
               </p>
-              
               <div className="border-t border-gray-200 pt-4 mb-6">
                 <p className="text-sm text-gray-500">
                   Data de adição: {new Date(item.dateAdded).toLocaleDateString('pt-BR')}
                 </p>
               </div>
-              
               {item.type === 'pdf' && (
                 <div className="mb-6">
                   <div className="bg-gray-100 p-6 rounded-lg flex flex-col items-center">
                     <File className="h-16 w-16 text-primary-600 mb-2" />
                     <p className="text-gray-700 mb-4">Visualize ou faça o download do PDF</p>
                     <div className="flex space-x-4">
-                      <a 
-                        href="#" 
+                      <a
+                        href={item.url}
                         className="btn btn-primary"
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
                         Visualizar
                       </a>
-                      <a 
-                        href="#" 
+                      <a
+                        href={item.url.replace('/preview', '/export?format=pdf')}
                         className="btn btn-outline"
-                        onClick={(e) => e.preventDefault()}
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
                         Download
                       </a>
@@ -395,35 +406,34 @@ const ItemDetail = () => {
                   </div>
                 </div>
               )}
-              
               {item.type === 'audio' && (
                 <div className="mb-6">
                   <div className="bg-gray-100 p-6 rounded-lg">
-                    <audio 
-                      controls 
+                    <audio
+                      controls
                       className="w-full"
-                      src="#"
+                      src={item.url}
                     >
                       Seu navegador não suporta áudio HTML5.
                     </audio>
                   </div>
                 </div>
               )}
-              
               {item.type === 'video' && (
                 <div className="mb-6">
                   <div className="bg-gray-100 p-6 rounded-lg">
                     <div className="aspect-w-16 aspect-h-9">
-                      <div className="w-full h-0 pb-[56.25%] relative bg-black">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <p className="text-white">Player de vídeo (demonstração)</p>
-                        </div>
-                      </div>
+                      <iframe
+                        src={item.url}
+                        title={item.title}
+                        allow="autoplay"
+                        allowFullScreen
+                        className="w-full h-64 rounded-lg bg-black"
+                      />
                     </div>
                   </div>
                 </div>
               )}
-              
               <div className="flex space-x-4">
                 <button className="btn btn-outline">
                   Compartilhar
@@ -435,7 +445,6 @@ const ItemDetail = () => {
             </div>
           </div>
         </div>
-        
         {/* Related Items */}
         <div className="mt-12">
           <h2 className="text-xl font-semibold mb-6">Itens Relacionados</h2>
@@ -446,9 +455,9 @@ const ItemDetail = () => {
               .map((relItem) => (
                 <div key={relItem.id} className="card overflow-hidden">
                   <div className="h-40 bg-gray-200">
-                    <img 
+                    <img
                       src={relItem.thumbnailUrl}
-                      alt={relItem.title} 
+                      alt={relItem.title}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -458,8 +467,8 @@ const ItemDetail = () => {
                       {relItem.description}
                     </p>
                     <div className="text-right">
-                      <Link 
-                        to={`/acervo/${relItem.category}/${relItem.id}`} 
+                      <Link
+                        to={`/acervo/${relItem.category}/${relItem.id}`}
                         className="text-primary-600 hover:text-primary-700 text-sm font-medium"
                       >
                         Acessar

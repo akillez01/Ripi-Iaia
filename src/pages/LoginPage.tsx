@@ -1,14 +1,54 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Eye, EyeOff, Lock, Mail, Star } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
+const mockUser = {
+  email: 'usuario@exemplo.com',
+  password: '123456'
+};
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const toggleView = () => setIsLogin(!isLogin);
+  const toggleView = () => {
+    setIsLogin(!isLogin);
+    setError('');
+    setForm({ name: '', email: '', password: '', confirmPassword: '' });
+  };
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    if (isLogin) {
+      // Simulação de login
+      if (form.email === mockUser.email && form.password === mockUser.password) {
+        // Redireciona para a home ou dashboard
+        navigate('/');
+      } else {
+        setError('E-mail ou senha inválidos.');
+      }
+    } else {
+      // Simulação de cadastro
+      if (!form.name.trim()) return setError('Nome é obrigatório.');
+      if (!/\S+@\S+\.\S+/.test(form.email)) return setError('E-mail inválido.');
+      if (form.password.length < 6) return setError('A senha deve ter pelo menos 6 caracteres.');
+      if (form.password !== form.confirmPassword) return setError('As senhas não coincidem.');
+      // Cadastro simulado bem-sucedido
+      setIsLogin(true);
+      setError('Cadastro realizado! Faça login.');
+      setForm({ name: '', email: '', password: '', confirmPassword: '' });
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -39,7 +79,11 @@ const LoginPage = () => {
                 {isLogin ? 'Entrar na sua conta' : 'Criar uma nova conta'}
               </h2>
 
-              <form className="space-y-6">
+              {error && (
+                <div className="mb-4 text-red-600 text-sm text-center">{error}</div>
+              )}
+
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 {!isLogin && (
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -50,6 +94,8 @@ const LoginPage = () => {
                       name="name"
                       type="text"
                       required
+                      value={form.name}
+                      onChange={handleChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Digite seu nome completo"
                     />
@@ -66,6 +112,8 @@ const LoginPage = () => {
                       name="email"
                       type="email"
                       required
+                      value={form.email}
+                      onChange={handleChange}
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Digite seu e-mail"
                     />
@@ -83,6 +131,8 @@ const LoginPage = () => {
                       name="password"
                       type={showPassword ? 'text' : 'password'}
                       required
+                      value={form.password}
+                      onChange={handleChange}
                       className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Digite sua senha"
                     />
@@ -108,6 +158,8 @@ const LoginPage = () => {
                       name="confirmPassword"
                       type="password"
                       required
+                      value={form.confirmPassword}
+                      onChange={handleChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Confirme sua senha"
                     />

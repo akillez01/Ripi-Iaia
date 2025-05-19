@@ -1,12 +1,13 @@
 import { Pause, Play, Volume1, Volume2, VolumeX } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-const RADIO_STREAM_URL = 'https://seu-link-de-radio.com/stream'; // Substitua pelo link real do streaming
+const RADIO_STREAM_URL = 'https://radiojagube.org/'; // Substitua pelo link real do streaming
 const BACKGROUND_MUSIC_URL = `${import.meta.env.BASE_URL}audio/lua-branca/01.mp3`; // Substitua pelo arquivo desejado
+const backgroundImageUrl = `${import.meta.env.BASE_URL}image/Floresta.jpeg`; // Caminho da imagem de fundo
 
 const RadioPage = () => {
   const [isBgPlaying, setIsBgPlaying] = useState(true);
-  const [volume, setVolume] = useState(0.8);
+  const [volume, setVolume] = useState(0.5); // Volume médio
   const [isMuted, setIsMuted] = useState(false);
   const bgAudioRef = useRef<HTMLAudioElement>(null);
 
@@ -37,7 +38,19 @@ const RadioPage = () => {
   };
 
   return (
-    <div>
+    <div className="relative min-h-screen">
+      {/* Imagem de fundo com transparência */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: `url(${backgroundImageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.35, // Transparência
+          filter: 'blur(0px)',
+        }}
+        aria-hidden="true"
+      />
       {/* Música de fundo (loop) */}
       <audio
         ref={bgAudioRef}
@@ -48,7 +61,7 @@ const RadioPage = () => {
       />
 
       {/* Hero Section */}
-      <section className="bg-primary-900 text-white py-16">
+      <section className="relative z-10 bg-primary-900/80 text-white py-16">
         <div className="container-custom">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-3xl md:text-4xl font-display font-bold mb-4">
@@ -66,7 +79,7 @@ const RadioPage = () => {
               Ouvir Rádio ao Vivo
             </a>
             <div className="mt-6 flex flex-col items-center gap-2">
-              <div className="flex items-center gap-2 bg-primary-800/40 px-4 py-2 rounded-lg">
+              <div className="flex items-center gap-2 bg-primary-800/60 px-4 py-2 rounded-lg shadow-lg">
                 <button
                   onClick={() => setIsBgPlaying((prev) => !prev)}
                   className="text-white"
@@ -106,9 +119,9 @@ const RadioPage = () => {
       </section>
 
       {/* Info Section */}
-      <section className="section">
+      <section className="relative z-10 section">
         <div className="container-custom">
-          <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8 text-center">
+          <div className="max-w-2xl mx-auto bg-white/90 rounded-lg shadow-md p-8 text-center">
             <h2 className="text-xl font-semibold mb-4 text-primary-800">Sobre a Rádio</h2>
             <p className="text-gray-700 mb-4">
               A Rádio Ripi Iaiá é um projeto dedicado à difusão da musicalidade da doutrina do Santo Daime,

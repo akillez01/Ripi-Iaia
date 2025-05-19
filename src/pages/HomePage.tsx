@@ -137,7 +137,7 @@ const HomePage = () => {
                 <Star className="absolute top-0 left-0 text-secondary-500 h-12 w-12 rotate-30 opacity-70 animate-star" />
               </div>
             </div>
-            <h2 className="section-title mb-6">Bem-vindo ao Ripi ia iá</h2>
+            <h2 className="section-title mb-6">Bem-vindo ao Ripi Iaiá</h2>
             <p className="text-lg text-gray-700 mb-8">
               Um portal dedicado à musicalidade e mídias da doutrina do Santo Daime, 
               proporcionando acesso a hinários, áudios, vídeos e todo conteúdo 
