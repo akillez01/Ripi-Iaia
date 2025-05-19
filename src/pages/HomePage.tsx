@@ -6,21 +6,21 @@ import { Link } from 'react-router-dom';
 const banners = [
   {
     id: 1,
-    title: "Novos Hinários Disponíveis",
+    title: "Caminho abertos sempre",
     description: "Acesse nossa coleção atualizada de hinários com partituras e áudios.",
     image: `${import.meta.env.BASE_URL}image/mad-rita.jpg`,
     link: "/acervo/hinarios"
   },
   {
     id: 2,
-    title: "Transmissão ao Vivo",
+    title: "Fé para seguir",
     description: "Acompanhe nossos encontros espirituais com transmissão em tempo real.",
     image: `${import.meta.env.BASE_URL}image/pad.jpeg`,
     link: "/live"
   },
   {
     id: 3,
-    title: "Nova Coleção na Loja",
+    title: "Viva ao nosso Festival☆",
     description: "Conheça os novos itens disponíveis em nossa loja virtual.",
     image: `${import.meta.env.BASE_URL}image/pad2.jpeg`,
     link: "/loja"
