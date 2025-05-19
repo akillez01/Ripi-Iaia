@@ -52,7 +52,7 @@ const RadioPage = () => {
         <div className="container-custom">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Rádio Ripi ia iá
+              Rádio Ripi Iaiá
             </h1>
             <p className="text-lg text-primary-100 mb-8">
               Ouça nossa rádio 24 horas por dia, 7 dias por semana, com hinários e músicas da doutrina.
@@ -111,7 +111,7 @@ const RadioPage = () => {
           <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8 text-center">
             <h2 className="text-xl font-semibold mb-4 text-primary-800">Sobre a Rádio</h2>
             <p className="text-gray-700 mb-4">
-              A Rádio Ripi ia iá é um projeto dedicado à difusão da musicalidade da doutrina do Santo Daime,
+              A Rádio Ripi Iaiá é um projeto dedicado à difusão da musicalidade da doutrina do Santo Daime,
               transmitindo hinários, músicas e conteúdos relacionados 24 horas por dia.
             </p>
             <a
