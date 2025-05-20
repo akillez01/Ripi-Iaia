@@ -12,7 +12,13 @@ const navItems = [
   { name: 'Rádio', path: '/radio' },
   { name: 'Loja', path: '/loja' },
   { name: 'Contato', path: '/contato' },
-  { name: 'Posts (Admin)', path: '/admin/posts' },
+];
+
+const adminItems = [
+  { name: 'Posts', path: '/admin/posts' },
+  { name: 'Vídeos', path: '/admin/videos' },
+  { name: 'Hinos', path: '/admin/hymns' },
+  { name: 'Livros', path: '/admin/books' },
 ];
 
 const Navbar = () => {
@@ -50,10 +56,10 @@ const Navbar = () => {
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         scrolled
-          ? 'bg-white shadow-md py-3' // aumente o padding vertical
-          : 'bg-transparent py-5'     // aumente o padding vertical
+          ? 'bg-white shadow-md py-3'
+          : 'bg-transparent py-5'
       )}
-      style={{ minHeight: 68 }} // garante altura mínima para o logo
+      style={{ minHeight: 68 }}
     >
       <div className="container-custom flex items-center justify-between min-h-[64px]">
         {/* Logo & Mobile Menu Button */}
@@ -107,6 +113,29 @@ const Navbar = () => {
               {item.name}
             </Link>
           ))}
+          {/* Dropdown Admin */}
+          <div className="relative group">
+            <button
+              className="px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 text-gray-700 hover:text-primary-600 hover:bg-primary-50 flex items-center"
+              type="button"
+            >
+              Painel Admin
+              <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div className="absolute left-0 mt-2 w-40 bg-white rounded-md shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50">
+              {adminItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-700"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </div>
         </nav>
 
         {/* Login/Account Button */}
@@ -161,6 +190,24 @@ const Navbar = () => {
             <nav className="flex-1 overflow-auto py-4">
               <ul className="space-y-1 px-2">
                 {navItems.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      to={item.path}
+                      className={cn(
+                        'block px-3 py-4 text-base font-medium rounded-md transition-colors duration-200',
+                        pathname === item.path
+                          ? 'text-primary-700 bg-primary-50'
+                          : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50'
+                      )}
+                      onClick={closeMenu}
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+                {/* Admin section mobile */}
+                <li className="mt-4 font-semibold text-primary-700">Painel Admin</li>
+                {adminItems.map((item) => (
                   <li key={item.name}>
                     <Link
                       to={item.path}

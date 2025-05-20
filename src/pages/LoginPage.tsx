@@ -1,12 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Eye, EyeOff, Lock, Mail, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
-const mockUser = {
-  email: 'usuario@exemplo.com',
-  password: '123456'
-};
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,6 +11,7 @@ const LoginPage = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const toggleView = () => {
     setIsLogin(!isLogin);
@@ -26,28 +24,54 @@ const LoginPage = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     if (isLogin) {
-      // Simulação de login
-      if (form.email === mockUser.email && form.password === mockUser.password) {
-        // Redireciona para a home ou dashboard
-        navigate('/');
-      } else {
+      // Login real com Supabase
+      const { error } = await supabase.auth.signInWithPassword({
+        email: form.email,
+        password: form.password,
+      });
+      if (error) {
         setError('E-mail ou senha inválidos.');
+      } else {
+        login(form.email); // Marca como autenticado no contexto
+        navigate('/admin/posts');
       }
     } else {
-      // Simulação de cadastro
+      // Cadastro real com Supabase
       if (!form.name.trim()) return setError('Nome é obrigatório.');
       if (!/\S+@\S+\.\S+/.test(form.email)) return setError('E-mail inválido.');
       if (form.password.length < 6) return setError('A senha deve ter pelo menos 6 caracteres.');
       if (form.password !== form.confirmPassword) return setError('As senhas não coincidem.');
-      // Cadastro simulado bem-sucedido
-      setIsLogin(true);
-      setError('Cadastro realizado! Faça login.');
-      setForm({ name: '', email: '', password: '', confirmPassword: '' });
+
+      const { error } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+        options: {
+          data: { name: form.name }
+        }
+      });
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setIsLogin(true);
+        setError('Cadastro realizado! Verifique seu e-mail para ativar a conta.');
+        setForm({ name: '', email: '', password: '', confirmPassword: '' });
+      }
     }
+  };
+
+  // Função para login com Google
+  const handleGoogleLogin = async () => {
+    setError('');
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    });
+    if (error) setError('Erro ao logar com Google');
+    // O Supabase faz o redirecionamento automaticamente
   };
 
   return (
@@ -61,7 +85,7 @@ const LoginPage = () => {
                 <Star className="absolute top-0 left-0 text-secondary-500 h-10 w-10 rotate-30 opacity-70" />
               </div>
               <span className="ml-2 text-2xl font-display font-semibold text-primary-800">
-                Ripi ia iá
+                Ripi Iaiá
               </span>
             </Link>
           </div>
@@ -114,10 +138,9 @@ const LoginPage = () => {
                       required
                       value={form.email}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full pl-3 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Digite seu e-mail"
                     />
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                   </div>
                 </div>
 
@@ -133,17 +156,16 @@ const LoginPage = () => {
                       required
                       value={form.password}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Digite sua senha"
                     />
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <button
                       type="button"
                       onClick={togglePasswordVisibility}
                       aria-label="Mostrar ou ocultar senha"
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      {showPassword ? 'Ocultar' : 'Mostrar'}
                     </button>
                   </div>
                 </div>
@@ -163,32 +185,6 @@ const LoginPage = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Confirme sua senha"
                     />
-                  </div>
-                )}
-
-                {isLogin && (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <input
-                        id="rememberMe"
-                        name="rememberMe"
-                        type="checkbox"
-                        className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                      />
-                      <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-600">
-                        Lembrar-me
-                      </label>
-                    </div>
-
-                    <div className="text-sm">
-                      <button
-                        type="button"
-                        onClick={() => alert('Funcionalidade ainda não implementada.')}
-                        className="text-primary-600 hover:text-primary-700 font-medium"
-                      >
-                        Esqueceu a senha?
-                      </button>
-                    </div>
                   </div>
                 )}
 
@@ -215,6 +211,7 @@ const LoginPage = () => {
                 <div className="mt-6">
                   <button
                     type="button"
+                    onClick={handleGoogleLogin}
                     className="w-full flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                   >
                     <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
