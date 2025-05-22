@@ -24,13 +24,14 @@ import VideoAulasPage from './pages/VideoAulasPage';
 function AuthHandler() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, login, loading } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (user && !isAuthenticated) {
-        login(user.email);
+        // O contexto será atualizado automaticamente pelo AuthProvider via onAuthStateChange
         // Só redireciona se estiver na tela de login
         if (location.pathname === '/login') {
           navigate('/admin/posts');
@@ -38,7 +39,7 @@ function AuthHandler() {
       }
     };
     checkUser();
-  }, [login, navigate, isAuthenticated, location.pathname]);
+  }, [isAuthenticated, navigate, location.pathname]);
 
   return null;
 }

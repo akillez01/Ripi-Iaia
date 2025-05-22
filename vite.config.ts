@@ -8,4 +8,7 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  server: {
+    // Para fallback SPA, use o plugin vite-plugin-history-fallback ou configure o servidor web de produção.
+  },
 });

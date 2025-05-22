@@ -11,7 +11,7 @@ const LoginPage = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, logout, userEmail } = useAuth();
 
   const toggleView = () => {
     setIsLogin(!isLogin);
@@ -50,7 +50,7 @@ const LoginPage = () => {
         email: form.email,
         password: form.password,
         options: {
-          data: { name: form.name }
+          data: { full_name: form.name, name: form.name }
         }
       });
 
@@ -89,6 +89,26 @@ const LoginPage = () => {
               </span>
             </Link>
           </div>
+
+          {/* Exibe usuário logado e botão de sair */}
+          {userEmail && (
+            <div className="mb-6 text-center">
+              <div className="text-green-700 font-semibold mb-2">
+                Logado como: {userEmail}
+              </div>
+              <button
+                onClick={() => {
+                  logout();
+                  setForm({ name: '', email: '', password: '', confirmPassword: '' });
+                  setIsLogin(true);
+                  setError('');
+                }}
+                className="text-red-600 hover:text-red-800 text-sm underline"
+              >
+                Sair
+              </button>
+            </div>
+          )}
 
           <AnimatePresence mode="wait">
             <motion.div

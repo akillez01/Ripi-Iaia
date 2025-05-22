@@ -3,42 +3,63 @@ import { supabase } from '../lib/supabase';
 
 type AuthContextType = {
   isAuthenticated: boolean;
-  login: (email: string) => void;
-  logout: () => void;
+  login: (email: string, role?: string | null) => void;
+  logout: () => Promise<void>;
   userEmail: string | null;
+  userRole: string | null;
   loading: boolean;
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Busca o papel do usuário na tabela users
+  const fetchUserRole = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', userId)
+      .single();
+    if (!error && data) {
+      setUserRole(data.role);
+    } else {
+      setUserRole(null);
+    }
+  };
 
   useEffect(() => {
     const checkSession = async () => {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      console.log('Usuário detectado:', user);
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (user) {
-        setUserEmail(user.email);
+        setUserEmail(user.email ?? null);
         setIsAuthenticated(true);
+        await fetchUserRole(user.id);
       } else {
         setUserEmail(null);
         setIsAuthenticated(false);
+        setUserRole(null);
       }
       setLoading(false);
     };
     checkSession();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUserEmail(session.user.email);
+    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const user = session?.user;
+      if (user) {
+        setUserEmail(user.email ?? null);
         setIsAuthenticated(true);
+        await fetchUserRole(user.id);
       } else {
         setUserEmail(null);
         setIsAuthenticated(false);
+        setUserRole(null);
       }
     });
 
@@ -47,19 +68,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const login = (email: string) => {
+  const login = (email: string, role?: string | null) => {
     setUserEmail(email);
     setIsAuthenticated(true);
+    if (role) setUserRole(role);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUserEmail(null);
     setIsAuthenticated(false);
-    supabase.auth.signOut();
+    setUserRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, userEmail, loading }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, userEmail, userRole, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,6 +1,7 @@
 import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from "../../context/AuthContext";
 import { cn } from '../../utils/cn';
 
 const navItems = [
@@ -25,6 +26,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
+  const { isAuthenticated, userEmail, userRole, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -113,39 +115,53 @@ const Navbar = () => {
               {item.name}
             </Link>
           ))}
-          {/* Dropdown Admin */}
-          <div className="relative group">
-            <button
-              className="px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 text-gray-700 hover:text-primary-600 hover:bg-primary-50 flex items-center"
-              type="button"
-            >
-              Painel Admin
-              <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            <div className="absolute left-0 mt-2 w-40 bg-white rounded-md shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50">
-              {adminItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-700"
-                >
-                  {item.name}
-                </Link>
-              ))}
+          {/* Dropdown Admin - só mostra se autenticado */}
+          {isAuthenticated && (
+            <div className="relative group">
+              <button
+                className="px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 text-gray-700 hover:text-primary-600 hover:bg-primary-50 flex items-center"
+                type="button"
+              >
+                Painel Admin
+                <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div className="absolute left-0 mt-2 w-40 bg-white rounded-md shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50">
+                {adminItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-700"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </nav>
 
         {/* Login/Account Button */}
         <div>
-          <Link
-            to="/login"
-            className="hidden md:flex items-center px-3 py-2 text-sm font-medium text-primary-700 hover:text-primary-800 hover:bg-primary-50 rounded-md transition-colors duration-200"
-          >
-            Entrar
-          </Link>
+          {!isAuthenticated ? (
+            <Link
+              to="/login"
+              className="hidden md:flex items-center px-3 py-2 text-sm font-medium text-primary-700 hover:text-primary-800 hover:bg-primary-50 rounded-md transition-colors duration-200"
+            >
+              Entrar
+            </Link>
+          ) : (
+            <div className="hidden md:flex items-center space-x-2">
+              <span className="text-sm text-green-700 font-semibold">{userEmail}</span>
+              <button
+                onClick={logout}
+                className="px-2 py-1 text-sm text-red-600 hover:text-red-800 underline"
+              >
+                Sair
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Mobile Navigation Menu */}
@@ -205,35 +221,54 @@ const Navbar = () => {
                     </Link>
                   </li>
                 ))}
-                {/* Admin section mobile */}
-                <li className="mt-4 font-semibold text-primary-700">Painel Admin</li>
-                {adminItems.map((item) => (
-                  <li key={item.name}>
-                    <Link
-                      to={item.path}
-                      className={cn(
-                        'block px-3 py-4 text-base font-medium rounded-md transition-colors duration-200',
-                        pathname === item.path
-                          ? 'text-primary-700 bg-primary-50'
-                          : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50'
-                      )}
-                      onClick={closeMenu}
-                    >
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
+                {/* Admin section mobile - só mostra se autenticado */}
+                {isAuthenticated && (
+                  <>
+                    <li className="mt-4 font-semibold text-primary-700">Painel Admin</li>
+                    {adminItems.map((item) => (
+                      <li key={item.name}>
+                        <Link
+                          to={item.path}
+                          className={cn(
+                            'block px-3 py-4 text-base font-medium rounded-md transition-colors duration-200',
+                            pathname === item.path
+                              ? 'text-primary-700 bg-primary-50'
+                              : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50'
+                          )}
+                          onClick={closeMenu}
+                        >
+                          {item.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </>
+                )}
               </ul>
             </nav>
 
             <div className="p-4 border-t">
-              <Link
-                to="/login"
-                className="block w-full py-3 px-4 text-center font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-200"
-                onClick={closeMenu}
-              >
-                Entrar
-              </Link>
+              {!isAuthenticated ? (
+                <Link
+                  to="/login"
+                  className="block w-full py-3 px-4 text-center font-medium bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-200"
+                  onClick={closeMenu}
+                >
+                  Entrar
+                </Link>
+              ) : (
+                <div className="flex flex-col items-center space-y-2">
+                  <span className="text-green-700 font-semibold">{userEmail}</span>
+                  <button
+                    onClick={() => {
+                      logout();
+                      closeMenu();
+                    }}
+                    className="w-full py-2 px-4 text-center font-medium text-red-600 hover:text-red-800 underline"
+                  >
+                    Sair
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
