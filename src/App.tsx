@@ -20,7 +20,6 @@ import LojaPage from './pages/LojaPage';
 import RadioPage from './pages/RadioPage';
 import VideoAulasPage from './pages/VideoAulasPage';
 
-// Componente para tratar login social do Supabase
 function AuthHandler() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,8 +30,6 @@ function AuthHandler() {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
       if (user && !isAuthenticated) {
-        // O contexto será atualizado automaticamente pelo AuthProvider via onAuthStateChange
-        // Só redireciona se estiver na tela de login
         if (location.pathname === '/login') {
           navigate('/admin/posts');
         }
@@ -57,60 +54,66 @@ function GlobalFooterPlayer() {
   );
 }
 
+function AppContent() {
+  return (
+    <Routes>
+      <Route
+        path="/admin/posts"
+        element={
+          <ProtectedRoute>
+            <AdminPanelPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/videos"
+        element={
+          <ProtectedRoute>
+            <AdminVideosPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/hymns"
+        element={
+          <ProtectedRoute>
+            <AdminHymnsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/books"
+        element={
+          <ProtectedRoute>
+            <AdminBooksPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<PageLayout><HomePage /></PageLayout>} />
+      <Route path="/acervo/*" element={<PageLayout><AcervoPage /></PageLayout>} />
+      <Route path="/radio" element={<PageLayout><RadioPage /></PageLayout>} />
+      <Route path="/live" element={<PageLayout><LivePage /></PageLayout>} />
+      <Route path="/videoaulas" element={<PageLayout><VideoAulasPage /></PageLayout>} />
+      <Route path="/biblioteca" element={<PageLayout><Biblioteca /></PageLayout>} />
+      <Route path="/loja" element={<PageLayout><LojaPage /></PageLayout>} />
+      <Route path="/contato" element={<PageLayout><ContatoPage /></PageLayout>} />
+      <Route path="*" element={<PageLayout><HomePage /></PageLayout>} />
+    </Routes>
+  );
+}
+
 function App() {
   return (
-    <AudioPlayerProvider>
-      <AuthProvider>
-        <Router>
+    <Router>
+      <AudioPlayerProvider>
+        <AuthProvider>
           <AuthHandler />
-          <Routes>
-            <Route
-              path="/admin/posts"
-              element={
-                <ProtectedRoute>
-                  <AdminPanelPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/videos"
-              element={
-                <ProtectedRoute>
-                  <AdminVideosPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/hymns"
-              element={
-                <ProtectedRoute>
-                  <AdminHymnsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin/books"
-              element={
-                <ProtectedRoute>
-                  <AdminBooksPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/" element={<PageLayout><HomePage /></PageLayout>} />
-            <Route path="/acervo/*" element={<PageLayout><AcervoPage /></PageLayout>} />
-            <Route path="/radio" element={<PageLayout><RadioPage /></PageLayout>} />
-            <Route path="/live" element={<PageLayout><LivePage /></PageLayout>} />
-            <Route path="/videoaulas" element={<PageLayout><VideoAulasPage /></PageLayout>} />
-            <Route path="/biblioteca" element={<PageLayout><Biblioteca /></PageLayout>} />
-            <Route path="/loja" element={<PageLayout><LojaPage /></PageLayout>} />
-            <Route path="/contato" element={<PageLayout><ContatoPage /></PageLayout>} />
-            <Route path="*" element={<PageLayout><HomePage /></PageLayout>} />
-          </Routes>
+          <AppContent />
           <GlobalFooterPlayer />
-        </Router>
-      </AuthProvider>
-    </AudioPlayerProvider>
+        </AuthProvider>
+      </AudioPlayerProvider>
+    </Router>
   );
 }
 

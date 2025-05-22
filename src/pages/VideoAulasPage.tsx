@@ -39,7 +39,7 @@ const videoAulas = [
     category: 'teoria',
     duration: 900,
     created_at: '2024-05-15T18:00:00',
-    thumbnailUrl: 'https://os5.mycloud.com/cloud/folders/lp2uayxm37uq6pdrd4ccwc2w',
+    thumbnailUrl: `${import.meta.env.BASE_URL}image/pd-serbatiao.jpeg`,
     videoUrl: '#',
   },
   {

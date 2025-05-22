@@ -1,13 +1,13 @@
 import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from "../../context/AuthContext";
 import { cn } from '../../utils/cn';
 
 const navItems = [
   { name: 'Home', path: '/' },
   { name: 'Acervo', path: '/acervo' },
-  { name: 'Hinarios', path: '/biblioteca' },
+  { name: 'Hinários', path: '/biblioteca' },
   { name: 'Videoaulas', path: '/videoaulas' },
   { name: 'Ao Vivo', path: '/live' },
   { name: 'Rádio', path: '/radio' },
@@ -26,6 +26,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { isAuthenticated, userEmail, userRole, logout } = useAuth();
 
   useEffect(() => {
@@ -52,6 +53,15 @@ const Navbar = () => {
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   return (
     <header
@@ -83,7 +93,7 @@ const Navbar = () => {
             <img
               src={`${import.meta.env.BASE_URL}logo.jpeg`}
               alt="Logo"
-              className="h-10 w-10 md:h-12 md:w-12 object-contain"
+              className="h-10 w-10 md:h-12 md:w-12 object-contain rounded-full"
               style={{
                 maxHeight: 48,
                 maxWidth: 48,
@@ -115,8 +125,8 @@ const Navbar = () => {
               {item.name}
             </Link>
           ))}
-          {/* Dropdown Admin - só mostra se autenticado */}
-          {isAuthenticated && (
+          
+          {isAuthenticated && userRole === 'admin' && (
             <div className="relative group">
               <button
                 className="px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 text-gray-700 hover:text-primary-600 hover:bg-primary-50 flex items-center"
@@ -133,6 +143,7 @@ const Navbar = () => {
                     key={item.name}
                     to={item.path}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-700"
+                    onClick={closeMenu}
                   >
                     {item.name}
                   </Link>
@@ -143,19 +154,23 @@ const Navbar = () => {
         </nav>
 
         {/* Login/Account Button */}
-        <div>
+        <div className="hidden md:block">
           {!isAuthenticated ? (
             <Link
               to="/login"
-              className="hidden md:flex items-center px-3 py-2 text-sm font-medium text-primary-700 hover:text-primary-800 hover:bg-primary-50 rounded-md transition-colors duration-200"
+              className="flex items-center px-3 py-2 text-sm font-medium text-primary-700 hover:text-primary-800 hover:bg-primary-50 rounded-md transition-colors duration-200"
             >
               Entrar
             </Link>
           ) : (
-            <div className="hidden md:flex items-center space-x-2">
-              <span className="text-sm text-green-700 font-semibold">{userEmail}</span>
+            <div className="flex items-center space-x-2">
+              <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                <svg className="h-5 w-5 text-primary-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="px-2 py-1 text-sm text-red-600 hover:text-red-800 underline"
               >
                 Sair
@@ -177,20 +192,11 @@ const Navbar = () => {
                 to="/"
                 className="flex items-center"
                 onClick={closeMenu}
-                style={{ minHeight: 40 }}
               >
                 <img
                   src={`${import.meta.env.BASE_URL}logo.jpeg`}
                   alt="Logo"
-                  className="h-10 w-10 object-contain"
-                  style={{
-                    maxHeight: 40,
-                    maxWidth: 40,
-                    objectFit: 'contain',
-                    display: 'block',
-                    marginTop: 0,
-                    marginBottom: 0,
-                  }}
+                  className="h-10 w-10 object-contain rounded-full"
                 />
                 <span className="ml-2 text-lg font-semibold">Ripi Iaiá</span>
               </Link>
@@ -221,8 +227,8 @@ const Navbar = () => {
                     </Link>
                   </li>
                 ))}
-                {/* Admin section mobile - só mostra se autenticado */}
-                {isAuthenticated && (
+                
+                {isAuthenticated && userRole === 'admin' && (
                   <>
                     <li className="mt-4 font-semibold text-primary-700">Painel Admin</li>
                     {adminItems.map((item) => (
@@ -257,10 +263,19 @@ const Navbar = () => {
                 </Link>
               ) : (
                 <div className="flex flex-col items-center space-y-2">
-                  <span className="text-green-700 font-semibold">{userEmail}</span>
+                  <div className="flex items-center">
+                    <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center mr-2">
+                      <svg className="h-5 w-5 text-primary-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-gray-600 truncate max-w-[180px]">
+                      {userEmail}
+                    </span>
+                  </div>
                   <button
                     onClick={() => {
-                      logout();
+                      handleLogout();
                       closeMenu();
                     }}
                     className="w-full py-2 px-4 text-center font-medium text-red-600 hover:text-red-800 underline"
