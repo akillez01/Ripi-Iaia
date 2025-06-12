@@ -46,7 +46,7 @@ const ContatoPage = () => {
                       <h3 className="font-medium">Endereço</h3>
                       <p className="text-gray-600">
                         Rua da Floresta, 123 <br />
-                        Céu do Mar - Rio de Janeiro <br />
+                        Manaus - Am <br />
                         CEP: 00000-000
                       </p>
                     </div>

@@ -8,21 +8,21 @@ const banners = [
     id: 1,
     title: "Caminho abertos sempre",
     description: "Acesse nossa coleção atualizada de hinários com partituras e áudios.",
-    image: `${import.meta.env.BASE_URL}image/mad-rita.jpg`,
+    image: `${import.meta.env.BASE_URL}image/mestre5.webp`,
     link: "/acervo/hinarios"
   },
   {
     id: 2,
     title: "Fé para seguir",
     description: "Acompanhe nossos encontros espirituais com transmissão em tempo real.",
-    image: `${import.meta.env.BASE_URL}image/pad.jpeg`,
+    image: `${import.meta.env.BASE_URL}image/mestre1.webp`,
     link: "/live"
   },
   {
     id: 3,
     title: "Viva ao nosso Festival☆",
     description: "Conheça os novos itens disponíveis em nossa loja virtual.",
-    image: `${import.meta.env.BASE_URL}image/pad2.jpeg`,
+    image: `${import.meta.env.BASE_URL}image/mestre2.png`,
     link: "/loja"
   }
 ];
@@ -130,20 +130,35 @@ const HomePage = () => {
       {/* About Section */}
       <section className="section bg-earth-50">
         <div className="container-custom">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="flex justify-center mb-6">
+          <div className="max-w-3xl mx-auto flex flex-col items-center text-center gap-8">
+            <div className="flex justify-center mb-4">
               <div className="relative">
                 <Star className="text-primary-600 h-12 w-12 animate-star" />
                 <Star className="absolute top-0 left-0 text-secondary-500 h-12 w-12 rotate-30 opacity-70 animate-star" />
               </div>
             </div>
-            <h2 className="section-title mb-6">Bem-vindo ao Ripi Iaiá</h2>
-            <p className="text-lg text-gray-700 mb-8">
+            <h2 className="section-title mb-4">Bem-vindo ao Ripi Iaiá</h2>
+            {/* Vídeo de apresentação centralizado e maior */}
+            <div className="w-full flex justify-center">
+              <div className="relative w-full max-w-3xl aspect-video rounded-3xl border-4 border-primary-500 shadow-xl overflow-hidden animate-pulse-border bg-gradient-to-br from-primary-400 via-secondary-300 to-primary-700">
+                <iframe
+                  className="w-full h-full rounded-2xl min-h-[280px] md:min-h-[400px] lg:min-h-[500px]"
+                  src="https://www.youtube.com/embed/rqWu7U-edYM"
+                  title="Apresentação Ripi Iaiá"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+                {/* Borda vibrante animada */}
+                <div className="absolute inset-0 pointer-events-none rounded-3xl border-4 border-transparent animate-border-glow"></div>
+              </div>
+            </div>
+            <p className="text-lg text-gray-700 mt-8 mb-6 max-w-2xl mx-auto">
               Um portal dedicado à musicalidade e mídias da doutrina do Santo Daime, 
               proporcionando acesso a hinários, áudios, vídeos e todo conteúdo 
               relacionado à nossa sagrada tradição.
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap justify-center gap-4 mb-2">
               <Link to="/acervo" className="btn btn-primary">
                 Explorar Acervo
               </Link>
@@ -239,25 +254,24 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-primary-700 text-white">
-        <div className="container-custom text-center">
-          <h2 className="text-2xl md:text-3xl font-display font-bold mb-4">
+      <section className="py-10 md:py-12 bg-gradient-to-b from-white via-primary-100 to-primary-500">
+        <div className="container-custom text-center max-w-xl mx-auto">
+          <h2 className="text-xl md:text-2xl font-display font-bold mb-3" style={{ color: '#665A43' }}>
             Junte-se à nossa comunidade
           </h2>
-          <p className="text-primary-100 max-w-xl mx-auto mb-8">
-            Faça parte de nossa rede e tenha acesso a conteúdos exclusivos, 
-            transmissões ao vivo e muito mais.
+          <p className="max-w-lg mx-auto mb-5 text-sm md:text-base" style={{ color: '#665A43' }}>
+            Faça parte de nossa rede e tenha acesso a conteúdos exclusivos, transmissões ao vivo e muito mais.
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3">
             <Link 
               to="/login" 
-              className="btn bg-white text-primary-700 hover:bg-primary-50"
+              className="btn bg-white text-primary-700 hover:bg-primary-50 text-sm px-4 py-2"
             >
               Criar Conta
             </Link>
             <Link 
               to="/contato" 
-              className="btn border border-white text-white hover:bg-primary-600"
+              className="btn border border-white text-primary-700 hover:bg-primary-600 text-sm px-4 py-2"
             >
               Contato
             </Link>
@@ -269,3 +283,19 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+/* Adicione este CSS ao seu arquivo global ou tailwind.config.js para animação de borda
+//
+// @keyframes border-glow {
+//   0% { box-shadow: 0 0 0 0 #fbbf24, 0 0 0 0 #6366f1; }
+//   50% { box-shadow: 0 0 24px 8px #fbbf24, 0 0 32px 12px #6366f1; }
+//   100% { box-shadow: 0 0 0 0 #fbbf24, 0 0 0 0 #6366f1; }
+// }
+// .animate-border-glow {
+//   animation: border-glow 2.5s infinite;
+// }
+// .animate-pulse-border {
+//   animation: border-glow 2.5s infinite;
+// }
+//
+// Troque SEU_VIDEO_ID_AQUI pelo ID do vídeo do YouTube desejado. */

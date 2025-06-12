@@ -25,6 +25,12 @@ const adminItems = [
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') || 'light';
+    }
+    return 'light';
+  });
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, userEmail, userRole, logout } = useAuth();
@@ -51,8 +57,21 @@ const Navbar = () => {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   const handleLogout = async () => {
     try {
@@ -68,8 +87,9 @@ const Navbar = () => {
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         scrolled
-          ? 'bg-white shadow-md py-3'
-          : 'bg-transparent py-5'
+          ? 'bg-white shadow-md py-3 dark:bg-gray-950 dark:shadow-black/40'
+          : 'bg-transparent py-5 dark:bg-gray-950/80',
+        'dark:text-gray-200'
       )}
       style={{ minHeight: 68 }}
     >
@@ -110,7 +130,7 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-1">
+        <nav className="hidden md:flex items-center space-x-1 dark:text-gray-200">
           {navItems.map((item) => (
             <Link
               key={item.name}
@@ -153,6 +173,19 @@ const Navbar = () => {
           )}
         </nav>
 
+        {/* Botão de alternância de tema */}
+        <button
+          onClick={toggleTheme}
+          className="ml-2 p-2 rounded-full border border-primary-200 bg-primary-50 hover:bg-primary-100 transition-colors text-primary-700 dark:bg-gray-800 dark:text-emerald-300 dark:border-emerald-700"
+          aria-label="Alternar tema claro/escuro"
+        >
+          {theme === 'dark' ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.07l-.71.71M21 12h-1M4 12H3m16.95 7.07l-.71-.71M4.05 4.93l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" /></svg>
+          )}
+        </button>
+
         {/* Login/Account Button */}
         <div className="hidden md:block">
           {!isAuthenticated ? (
@@ -183,7 +216,8 @@ const Navbar = () => {
         <div
           className={cn(
             'fixed inset-0 z-50 bg-white md:hidden transition-transform duration-300 ease-in-out',
-            isOpen ? 'translate-x-0' : '-translate-x-full'
+            isOpen ? 'translate-x-0' : '-translate-x-full',
+            'dark:bg-gray-950 dark:text-gray-200'
           )}
         >
           <div className="flex flex-col h-full">
