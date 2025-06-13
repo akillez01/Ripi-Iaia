@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "homepage": "https://akillez01.github.io/Ripi-Iaia",
+  "homepage": "https://akillez01.github.io/Ong-Ripiiaia/Ripi-Iaia/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/Ripi-Iaia/',
+  base: '/Ong-Ripiiaia/Ripi-Iaia/', // Caminho correto para GitHub Pages
   plugins: [react()],
   optimizeDeps: {
     exclude: ['lucide-react'],

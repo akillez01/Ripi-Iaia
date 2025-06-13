@@ -124,7 +124,7 @@ const Navbar = () => {
               }}
             />
             <span className="ml-2 text-xl font-display font-semibold text-primary-800">
-              Ripi Iaiá
+              Universo Daime Ripi Iaiá
             </span>
           </Link>
         </div>
@@ -232,7 +232,7 @@ const Navbar = () => {
                   alt="Logo"
                   className="h-10 w-10 object-contain rounded-full"
                 />
-                <span className="ml-2 text-lg font-semibold">Ripi Iaiá</span>
+                <span className="ml-2 text-lg font-semibold">Universo Daime Ripi Iaiá</span>
               </Link>
               <button
                 onClick={closeMenu}
